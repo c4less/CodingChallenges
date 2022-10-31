@@ -1,52 +1,46 @@
 public class Solution {
+    Dictionary<int, List<int>> courseDict = new();
+    HashSet<int> visited = new();
     
-        Dictionary<int, List<int>> graphDict = new();
-        HashSet<int> visited = new();
     public bool CanFinish(int numCourses, int[][] prerequisites) {
+        
+        for(int course =0; course < numCourses; course++)
+        {
+            courseDict.Add(course, new());
+        }
+        
+        foreach(var preReq in prerequisites)
+        {
+            courseDict[preReq[0]].Add(preReq[1]);
+        }
         
         for(int i=0; i< numCourses; i++)
         {
-            if(!graphDict.ContainsKey(i))
+            if(!isNonCyclic(i))
             {
-                graphDict.Add(i, new List<int>());
-            }
-        }
-        
-        foreach(var prereq in prerequisites)
-        {
-            graphDict[prereq[1]].Add(prereq[0]);            
-        }
-         
-       
-        for(int course=0; course< numCourses; course++)    
-        {
-            if(DFS(course)==false){
                 return false;
             }
         }
         return true;
     }
-            
-  
-   
-      public bool DFS(int course)
+    
+    private bool isNonCyclic(int course)
     {
         if(visited.Contains(course)) return false;
-        if(graphDict[course].Count==0) return true;
+        if(courseDict[course].Count ==0) return true;
         
         visited.Add(course);
-        foreach(var depCourse in graphDict[course])
+        foreach(var depCourse in courseDict[course])
         {
-            if(DFS(depCourse)==false){
+            if(!isNonCyclic(depCourse))
+            {
                 return false;
             }
-           
         }
         visited.Remove(course);
-        graphDict[course]= new();
+        courseDict[course] = new();
         return true;
-    } 
+    }
     
     
-                
 }
