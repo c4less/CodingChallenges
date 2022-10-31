@@ -20,7 +20,7 @@ public class Solution {
        
         for(int course=0; course< numCourses; course++)    
         {
-            if(!DFS(course)){
+            if(DFS(course)==false){
                 return false;
             }
         }
@@ -37,9 +37,10 @@ public class Solution {
         visited.Add(course);
         foreach(var depCourse in graphDict[course])
         {
-            if(!DFS(depCourse)){
+            if(DFS(depCourse)==false){
                 return false;
             }
+           
         }
         visited.Remove(course);
         graphDict[course]= new();
