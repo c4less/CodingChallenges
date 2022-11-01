@@ -1,42 +1,46 @@
 public class Solution {
-    Dictionary<char, List<char>> adjList = new(); 
+    Dictionary<char, List<char>> wordGraph = new();
     Dictionary<char, int> indegree = new();
+    
     public string AlienOrder(string[] words) {
-        List<char> result = new();
+        
         foreach(string word in words)
         {
             foreach(char ch in word)
             {
-                if(!adjList.ContainsKey(ch))
-                    adjList.Add(ch, new());
+                if(!wordGraph.ContainsKey(ch))
+                    wordGraph.Add(ch, new());
                 
                 if(!indegree.ContainsKey(ch))
                     indegree.Add(ch, 0);
             }
         }
         
-        for(int i=0; i< words.Length-1; i++)
+        
+         for(int i=0; i< words.Length-1; i++)
         {
             string w1 = words[i], w2= words[i+1];
             int minLength = Math.Min(w1.Length, w2.Length);
-            bool isFound = false;
-          for(int j=0; j< minLength; j++)
+            
+            if(w1.Length > w2.Length && w1[..minLength] == w2[..minLength])
+            {
+                return string.Empty;
+            }
+            for(int j=0; j< minLength; j++)
             {
                 if (w1[j] != w2[j])
                 {
-                    isFound = true;
-                    adjList[w1[j]].Add(w2[j]);
+                    wordGraph[w1[j]].Add(w2[j]);
                     break;
                 }
             } 
-            if(!isFound && w1.Length > w2.Length)
-            {
-                return "";
-            }
         }
         
+               
+        Queue<char> queue = new();
+        StringBuilder sb = new();
         
-        foreach(var letters in adjList.Values)
+         foreach(var letters in wordGraph.Values)
         {
             foreach(char ch in letters)
             {
@@ -44,28 +48,28 @@ public class Solution {
             }
         }
         
-        Queue<char> queue = new();
         foreach(var key in indegree.Keys)
         {
             if(indegree[key]==0)
                 queue.Enqueue(key);
         }
         
+        
         while(queue.Any())
         {
             char current = queue.Dequeue();
+            sb.Append(current);
             
-            result.Add(current);
-            foreach(var letter in adjList[current])
+            foreach(char ch in wordGraph[current])
             {
-                indegree[letter]-=1;
-                if(indegree[letter] ==0) 
+                indegree[ch]-=1;
+                if(indegree[ch]==0)
                 {
-                    queue.Enqueue(letter);
+                    queue.Enqueue(ch);
                 }
             }
         }
         
-        return result.Count == indegree.Count ? new string(result.ToArray()) : string.Empty;
+        return indegree.Count== sb.Length ? sb.ToString(): string.Empty;
     }
 }
